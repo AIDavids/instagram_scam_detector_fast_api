@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Instagram Scam Detector</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Instagram Scam Detector</h1>
+        <form method="post" action="/predict">
+            <textarea name="caption" placeholder="Paste Instagram caption here...">{{ caption if caption else '' }}</textarea>
+            <button type="submit">Detect</button>
+        </form>
+        {% if prediction %}
+            <div class="result">{{ prediction }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>
