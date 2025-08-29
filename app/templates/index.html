@@ -1,18 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Instagram Scam Detector</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Instagram Scam Detector</h1>
-        <form method="post" action="/predict">
-            <textarea name="caption" placeholder="Paste Instagram caption here...">{{ caption if caption else '' }}</textarea>
-            <button type="submit">Detect</button>
+        <h1>📱 Instagram Scam Detector</h1>
+        <p>Paste an Instagram caption or message to check if it's a scam or legit.</p>
+
+        <form method="post">
+            <textarea name="caption" placeholder="Enter caption here..." required></textarea>
+            <button type="submit">Predict</button>
         </form>
-        {% if prediction %}
-            <div class="result">{{ prediction }}</div>
+
+        {% if result %}
+        <div class="output">
+            <h3>Result: {{ result.result }}</h3>
+            <p><strong>Scam Probability:</strong> {{ result.scam_probability }}</p>
+            <p><strong>Input:</strong> "{{ result.input }}"</p>
+        </div>
         {% endif %}
     </div>
 </body>
