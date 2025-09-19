@@ -7,7 +7,7 @@ import joblib
 from .utils import prepare_features
 
 # === Initialize FastAPI ===
-app = FastAPI(title="Instagram Scam Detector")
+app = FastAPI(title="Twitter Scam Detector")
 
 # Mount static files (CSS, JS, images)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -26,7 +26,7 @@ class InputText(BaseModel):
 # === API endpoints ===
 @app.get("/api")
 def home():
-    return {"message": "Welcome to the Instagram Scam Detector API! Use POST /predict to analyze captions."}
+    return {"message": "Welcome to the Twitter Scam Detector API! Use POST /predict to analyze captions."}
 
 @app.post("/api/predict")
 def predict_api(data: InputText):
