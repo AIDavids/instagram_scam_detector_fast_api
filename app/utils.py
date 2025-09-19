@@ -47,3 +47,46 @@ def prepare_features(texts, vectorizer):
 
     # Combine into final feature matrix
     return hstack([X_tfidf, numeric_feats])
+
+
+# --- Explanation helper (optional, small, safe) ---
+def get_lr_explanation(text, vectorizer, lr_model, top_k=5):
+    """
+    Returns top_k terms that contributed most toward the positive (scam) class for a LogisticRegression.
+    Requires: vectorizer (fitted TfidfVectorizer) and lr_model (fitted LogisticRegression with coef_).
+    If not logistic or vocab mismatch, returns empty list.
+    """
+    try:
+        # only works for linear models with coef_
+        if not hasattr(lr_model, "coef_"):
+            return []
+
+        # preprocess same as prepare_features uses
+        from scipy.sparse import csr_matrix
+        cleaned = [preprocess_text(text)]
+        tf = vectorizer.transform(cleaned)  # shape (1, n_features_tfidf)
+        coef = lr_model.coef_[0]  # shape (n_total_features,)
+        # coef corresponds to tfidf features first, then numeric features
+        n_tfidf = vectorizer.transform([""]).shape[1]  # quick way to get tfidf dim
+        tfidf_coefs = coef[:n_tfidf]
+
+        # get nonzero tfidf indices for the text
+        row = tf.tocsr()
+        nz = row.indices  # indices of tfidf terms present
+        if len(nz) == 0:
+            return []
+
+        # map indices to (term, score = coef * tfidf_value)
+        feature_names = vectorizer.get_feature_names_out()
+        contributions = []
+        for idx in nz:
+            term = feature_names[idx]
+            tfidf_val = row.data[list(row.indices).index(idx)]
+            score = tfidf_coefs[idx] * tfidf_val
+            contributions.append((term, float(score)))
+
+        # sort by contribution descending
+        contributions.sort(key=lambda x: x[1], reverse=True)
+        return contributions[:top_k]
+    except Exception:
+        return []
